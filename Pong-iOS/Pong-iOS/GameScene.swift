@@ -12,6 +12,8 @@ class GameScene: SKScene {
     
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
+    private var leftPaddle : SKShapeNode?
+    private var rightPaddle : SKShapeNode?
     
     override func didMove(to view: SKView) {
         
@@ -20,6 +22,22 @@ class GameScene: SKScene {
         if let label = self.label {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
+        }
+        
+        self.leftPaddle = self.childNode(withName: "//leftPaddle") as? SKShapeNode
+        if let leftPaddle = self.leftPaddle {
+            leftPaddle.fillColor = UIColor.blue
+            leftPaddle.physicsBody = SKPhysicsBody.init(rectangleOf: leftPaddle.frame.size)
+            leftPaddle.physicsBody?.affectedByGravity = false
+            leftPaddle.physicsBody?.allowsRotation = false
+            leftPaddle.physicsBody?.isDynamic = false
+        }
+        
+        self.rightPaddle = self.childNode(withName: "//rightPaddle") as? SKShapeNode
+        if let rightPaddle = rightPaddle {
+            rightPaddle.fillColor = UIColor.red
+            rightPaddle.physicsBody = SKPhysicsBody.init(rectangleOf: rightPaddle.frame.size)
+            rightPaddle.physicsBody?.affectedByGravity = false
         }
         
         // Create shape node to use during mouse interaction
@@ -36,6 +54,14 @@ class GameScene: SKScene {
         }
     }
     
+    func spawnBall() {
+        let node = SKShapeNode(circleOfRadius: 20)
+        self.addChild(node)
+        node.physicsBody = SKPhysicsBody(circleOfRadius: 20)
+        node.physicsBody?.affectedByGravity = false
+        node.physicsBody?.applyForce(CGVector.init(dx: 50, dy: 800))
+    }
+    
     
     func touchDown(atPoint pos : CGPoint) {
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
@@ -43,6 +69,8 @@ class GameScene: SKScene {
             n.strokeColor = SKColor.green
             self.addChild(n)
         }
+        self.leftPaddle?.position.x = pos.x
+        spawnBall()
     }
     
     func touchMoved(toPoint pos : CGPoint) {
@@ -51,6 +79,7 @@ class GameScene: SKScene {
             n.strokeColor = SKColor.blue
             self.addChild(n)
         }
+        self.leftPaddle?.position.x = pos.x
     }
     
     func touchUp(atPoint pos : CGPoint) {
